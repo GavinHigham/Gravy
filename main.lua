@@ -13,7 +13,7 @@ function findGravity(affected, affectee)
 	local r2 = dx*dx + dy*dy
 	local m1 = affected:getMass()
 	local m2 = affectee:getMass()
-	local force = -gConst*4000*m1*m2/r2
+	local force = -gConst*m1*m2/r2
 	return force*dx/r2, force*dy/r2
 end
 
@@ -36,12 +36,12 @@ function love.load()
 	-- Create some planets!
 	for i=1,8 do
 		for j=1,6 do
-			if love.math.noise(i+8, j+40) > 0.8 then
+			if love.math.noise(i+8, j+60) > 0.8 then
 				local posX = 100*i-50
 				local posY = 100*j-50
 				local body = love.physics.newBody(world, posX, posY, 'dynamic')
 				local shape = love.physics.newCircleShape(30)
-				local density = 1
+				local density = 20000
 				local fixture = love.physics.newFixture(body, shape, density)
 				table.insert(planets, body)
 			end
@@ -96,14 +96,19 @@ function love.mousereleased(x, y, button)
 	newMissile(pressed.x, pressed.y, vx, vy)
 end
 
-function love.update(dt)
-	world:update(dt)
+function applyGravity()
 	for i,missile in pairs(missiles) do
 		for j,planet in pairs(planets) do
 			local fx, fy = findGravity(missile, planet)
 			missile:applyLinearImpulse(fx, fy)
+			planet:applyLinearImpulse(-fx, -fy)
 		end
 	end
+end
+
+function love.update(dt)
+	world:update(dt)
+	applyGravity()
 	packPlanetPositions()
 end
 
