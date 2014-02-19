@@ -65,7 +65,8 @@ function love.load()
 			}
 			dir = (dir * 30);
 			vec2 neutral = vec2(pow(1-abs(dir.x), 5), pow(1-abs(dir.y), 5))*neutral;
-			float red = (neutral.x + neutral.y)/2;
+			//float red = (neutral.x + neutral.y)/2;
+			float red = 1 - sqrt(pow(dir.x, 2) + pow(dir.y, 2))/sqrt(2.0);
 			dir = (dir + 1)/2;
 			return vec4(vec3(red, dir.x, dir.y)*channels, 1.0);
 		}
